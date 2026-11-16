@@ -141,4 +141,4 @@ claude
 
 ## License
 
-Copyright (c) 2026 河北小柠科技有限公司 (Hebei Xiaoning Technology Co., Ltd.). 本项目源码以 [PolyForm Noncommercial 1.0.0](./LICENSE) 许可,商用需另行获得商业授权。
+Copyright (c) 2026 61API. 本项目源码以 [PolyForm Noncommercial 1.0.0](./LICENSE) 许可,商用需另行获得商业授权。
