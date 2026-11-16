@@ -1,0 +1,14 @@
+[Unit]
+Description=61API channel probe (one-shot)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=61api
+Group=61api
+WorkingDirectory=/opt/61api/backend
+EnvironmentFile=-/opt/61api/61api.env
+ExecStart=/opt/61api/venv/bin/python manage.py probe
+# 单渠道探活最长 20s;渠道较多时可放宽
+TimeoutStartSec=300

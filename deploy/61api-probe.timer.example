@@ -1,0 +1,10 @@
+[Unit]
+Description=61API channel probe timer (every 5 minutes)
+
+[Timer]
+OnCalendar=*:0/5
+Persistent=true
+Unit=61api-probe.service
+
+[Install]
+WantedBy=timers.target

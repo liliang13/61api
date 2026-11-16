@@ -1,0 +1,18 @@
+__pycache__/
+*.pyc
+backend/data/
+frontend/node_modules/
+frontend/dist/
+.env
+backend/instance/
+.pytest_cache/
+.zcode/
+/lb2.md5
+/sb3.md5
+
+# 非代码/私有材料,不入公开仓库(本地保留在磁盘)
+copyright_materials/
+**/软著申报材料/
+README-private.md
+AGENTS.md
+deploy/ops/

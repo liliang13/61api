@@ -1,0 +1,29 @@
+services:
+  61api:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: 61api-private:latest
+    container_name: 61api-private
+    restart: unless-stopped
+    env_file:
+      - ./61api.env
+    ports:
+      # 只暴露到本机,由宿主机 OpenResty/Nginx 终结 TLS 并反向代理
+      - "127.0.0.1:8300:8300"
+    volumes:
+      - 61api-data:/app/backend/data
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8300/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  61api-data:

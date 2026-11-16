@@ -1,0 +1,28 @@
+[Unit]
+Description=61API Flask application
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=61api
+Group=61api
+WorkingDirectory=/opt/61api/current/backend
+Environment=APP_ENV=production
+EnvironmentFile=/etc/61api/61api.env
+ExecStartPre=/opt/61api/current/.venv/bin/python /opt/61api/current/backend/manage.py migrate
+ExecStartPre=/opt/61api/current/.venv/bin/python /opt/61api/current/backend/manage.py check
+ExecStart=/opt/61api/current/.venv/bin/gunicorn --workers 2 --threads 8 --worker-class gthread --bind 127.0.0.1:8300 --access-logfile - --error-logfile - app:app
+Restart=on-failure
+RestartSec=5
+TimeoutStartSec=120
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/opt/61api/shared/backend/data /opt/61api/shared/backups
+
+[Install]
+WantedBy=multi-user.target
