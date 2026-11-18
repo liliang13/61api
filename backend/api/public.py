@@ -33,7 +33,7 @@ def site_info():
     }
     data["model_count"] = ModelItem.query.filter_by(status=1).count()
     if not IS_PRIVATE:
-        data["user_count"] = User.query.count()
+        data["user_count"] = User.query.filter(User.role != "admin").count()
         data["key_count"] = ApiKey.query.count()
     return ok(data)
 

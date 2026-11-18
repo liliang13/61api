@@ -39,7 +39,7 @@ def stats():
                .filter(UsageLog.status != "held", UsageLog.created_at >= today).first())
     revenue = db.session.query(func.coalesce(func.sum(TopupOrder.amount), 0))\
         .filter(TopupOrder.status == "paid").scalar()
-    users_total = User.query.count()
+    users_total = User.query.filter(User.role != "admin").count()
     quota_held = db.session.query(func.coalesce(func.sum(User.quota), 0)).scalar()
     series = []
     for i in range(13, -1, -1):
@@ -251,7 +251,7 @@ def user_reset_password(uid):
 def tenants():
     rows = Tenant.query.order_by(Tenant.id.asc()).all()
     user_counts = dict(db.session.query(User.tenant_id, func.count(User.id))
-                       .group_by(User.tenant_id).all())
+                       .filter(User.role != "admin").group_by(User.tenant_id).all())
     usage = dict(db.session.query(UsageLog.tenant_id, func.coalesce(func.sum(UsageLog.quota), 0))
                  .filter(UsageLog.status != "held").group_by(UsageLog.tenant_id).all())
     return ok([dict(t.to_dict(),
