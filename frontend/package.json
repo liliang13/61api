@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && node scripts/write-version.mjs",
+    "build:public": "vite build --mode public && node scripts/write-version.mjs",
     "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint src tests vite.config.js eslint.config.js"

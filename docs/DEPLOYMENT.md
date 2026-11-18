@@ -67,7 +67,8 @@ sudo cp deploy/61api.service.example /etc/systemd/system/61api.service
 RELEASE="$(date +%Y%m%d%H%M%S)"
 cd frontend
 npm ci
-npm run build
+npm run build          # 私有化部署:同源网关(/v1 由反向代理转发)
+# npm run build:public # 61api.cn 公开运营:网关走 https://api.61api.cn(frontend/.env.public)
 cd ..
 tar \
   --exclude='backend/data' --exclude='backend/data/*' \
