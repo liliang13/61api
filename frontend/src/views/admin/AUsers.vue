@@ -18,13 +18,20 @@
         <el-table-column label="UID" width="90">
           <template #default="{ row }"><code class="font-mono text-xs font-bold">{{ row.uid || '-' }}</code></template>
         </el-table-column>
-        <el-table-column prop="username" label="用户名" min-width="120" />
+        <el-table-column label="用户名" min-width="120">
+          <template #default="{ row }">
+            {{ row.username }}
+            <el-tag v-if="row.deleted_at" size="small" type="danger" effect="plain" class="ml-1">已注销</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="所属组织" min-width="120">
           <template #default="{ row }">
             <el-tag size="small" effect="plain">{{ row.tenant_name || '未分配' }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="phone" label="手机号" width="120" />
+        <el-table-column label="手机号" width="120">
+          <template #default="{ row }">{{ row.deleted_at ? (row.deleted_phone || '-') : row.phone }}</template>
+        </el-table-column>
         <el-table-column label="余额" width="110" align="right">
           <template #default="{ row }">¥{{ (row.quota / 500000).toFixed(6) }}</template>
         </el-table-column>
@@ -44,7 +51,10 @@
         </el-table-column>
         <el-table-column label="状态" width="90" align="center">
           <template #default="{ row }">
-            <el-switch :model-value="row.status === 1" @change="toggleStatus(row)" />
+            <el-switch v-if="!row.deleted_at" :model-value="row.status === 1" @change="toggleStatus(row)" />
+            <el-tooltip v-else content="已注销账户不可操作" placement="top">
+              <el-tag size="small" type="info" effect="plain">注销</el-tag>
+            </el-tooltip>
           </template>
         </el-table-column>
         <el-table-column prop="created_at" label="创建时间" width="160" />

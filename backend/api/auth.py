@@ -267,6 +267,37 @@ def change_password():
     return set_session_cookie(ok(), g.user)
 
 
+@bp.post("/account/delete")
+@auth_required
+def delete_account():
+    """注销账户:软删除。数据(订单/发票/用量等)全部保留,仅释放手机号供重新注册。
+
+    - status=0:登录/网关/会话统一按 status != 1 拒绝,注销即刻全链路生效
+    - token_version +1:旧 JWT 全部作废
+    - phone/username 改写为占位值腾出唯一键,原手机号存 deleted_phone 留档
+    """
+    if g.user.role == "admin":
+        return err("管理员账号不支持自助注销")
+    data = request.get_json(silent=True) or {}
+    password = data.get("password") or ""
+    if not g.user.password_hash or not check_password_hash(g.user.password_hash, password):
+        return err("密码错误")
+    u = g.user
+    stamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    suffix = f"deleted#{u.id}#{stamp}"
+    u.deleted_phone = u.phone
+    u.phone = suffix
+    u.username = suffix
+    u.status = 0
+    u.token_version = (u.token_version or 0) + 1
+    u.deleted_at = datetime.now()
+    db.session.commit()
+    audit.record("user.account_delete", target_type="user", target_id=u.id, actor=u)
+    from services.bark import user_deleted
+    user_deleted(u.deleted_phone or "")
+    return clear_session_cookie(ok())
+
+
 @bp.post("/phone/change/send-old")
 @auth_required
 def phone_change_send_old():

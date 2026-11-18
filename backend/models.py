@@ -60,6 +60,8 @@ class User(db.Model):
     register_ip = db.Column(db.String(64), default="")
     last_login_ip = db.Column(db.String(64), default="")
     concurrency_limit = db.Column(db.Integer, default=0)  # 单用户并发上限;0=用全局默认
+    deleted_at = db.Column(db.DateTime)                  # 注销标记;非空=已注销(软删除,数据保留)
+    deleted_phone = db.Column(db.String(20))             # 注销时腾出 phone/username 唯一键,原手机号存档于此
 
     def to_dict(self):
         from services.geo import ip_location
@@ -69,6 +71,8 @@ class User(db.Model):
             "quota": self.quota, "used_quota": self.used_quota,
             "concurrency_limit": self.concurrency_limit or 0,
             "invite_code": self.invite_code, "invited_by": self.invited_by,
+            "deleted_at": self.deleted_at.strftime("%Y-%m-%d %H:%M:%S") if self.deleted_at else None,
+            "deleted_phone": self.deleted_phone or "",
             "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S") if self.created_at else None,
             "last_login_at": self.last_login_at.strftime("%Y-%m-%d %H:%M:%S") if self.last_login_at else None,
             "register_ip": self.register_ip or "",

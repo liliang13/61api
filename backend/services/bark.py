@@ -52,6 +52,10 @@ def user_registered(phone: str, ip: str = "") -> None:
     send("61API 新用户注册", f"{phone} 注册加入{ip_part}")
 
 
+def user_deleted(phone: str) -> None:
+    send("61API 用户注销", f"{phone} 已注销账户(数据保留,手机号已释放)")
+
+
 def order_paid(username: str, amount_fen: int, package_id: str, order_no: str) -> None:
     send("61API 收到订单付款",
          f"{username} 支付 ¥{amount_fen / 100:.2f}(套餐 {package_id},单号 {order_no})")

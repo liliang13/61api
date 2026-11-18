@@ -62,6 +62,26 @@
         <el-button type="primary" @click="doChangePwd">保存新密码</el-button>
       </div>
     </div>
+
+    <!-- 注销账户 -->
+    <div class="rounded-2xl border border-red-100 bg-white p-6">
+      <h2 class="font-bold text-red-600">危险区</h2>
+      <div class="mt-3 space-y-3 text-sm text-stone-600">
+        <p>注销后账户立即停用,所有 API 密钥失效,当前手机号将被释放,可重新注册新账户。历史订单与用量数据将依法保留。</p>
+        <el-button type="danger" plain @click="delVisible = true">注销账户</el-button>
+      </div>
+    </div>
+
+    <el-dialog v-model="delVisible" title="确认注销账户" width="420px">
+      <div class="space-y-3 text-sm text-stone-600">
+        <p>此操作<b class="text-red-600">不可恢复</b>:账户余额与资源包将无法再使用,请确认已无需保留。</p>
+        <el-input v-model="delPassword" type="password" placeholder="请输入账户密码确认" show-password @keydown.enter="doDelete" />
+      </div>
+      <template #footer>
+        <el-button @click="delVisible = false">取消</el-button>
+        <el-button type="danger" :loading="deleting" @click="doDelete">确认注销</el-button>
+      </template>
+    </el-dialog>
   </div>
   <AliyunCaptcha ref="captcha" />
 </template>
@@ -69,14 +89,16 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
 import {
   bindPhone, bindPhoneSend, changePassword, changePhoneSendOld,
-  changePhoneVerifyOld,
+  changePhoneVerifyOld, deleteAccount,
 } from '../../api'
 import AliyunCaptcha from '../../components/AliyunCaptcha.vue'
 import { useUserStore } from '../../stores/user'
 
 const store = useUserStore()
+const router = useRouter()
 const step = ref(1)
 const phone = ref('')
 const smsCode = ref('')
@@ -195,5 +217,24 @@ async function doChangePwd() {
   await changePassword({ old_password: pwd.value.old_password, new_password: pwd.value.new_password })
   ElMessage.success('密码已更新')
   pwd.value = { old_password: '', new_password: '', confirm: '' }
+}
+
+const delVisible = ref(false)
+const delPassword = ref('')
+const deleting = ref(false)
+
+async function doDelete() {
+  if (!delPassword.value) return ElMessage.warning('请输入账户密码确认')
+  deleting.value = true
+  try {
+    await deleteAccount({ password: delPassword.value })
+    delVisible.value = false
+    ElMessage.success('账户已注销')
+    await store.logout()
+    router.push('/')
+  } finally {
+    deleting.value = false
+    delPassword.value = ''
+  }
 }
 </script>

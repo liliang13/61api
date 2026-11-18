@@ -186,6 +186,8 @@ def user_update(uid):
     if quota_set is not None and quota_set < 0:
         return err("额度不能为负数", 400)
     if "status" in data:
+        if user.deleted_at:
+            return err("已注销账户不可变更状态(软删除保留中)")
         user.status = 1 if data["status"] else 0
     if "role" in data and data["role"] in ("user", "admin"):
         user.role = data["role"]
