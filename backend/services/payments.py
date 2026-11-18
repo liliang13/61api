@@ -153,6 +153,13 @@ class QuotaEntitlements:
             if mirror.status == "paid":
                 grant_pending_for(mirror.user_id, commit=False)
             db.session.commit()
+            if changed:
+                # 仅首笔入账时推送 Bark(渠道重发通知幂等,不重复打扰)
+                from services.bark import order_paid
+                _u = db.session.get(User, mirror.user_id)
+                order_paid(_u.username if _u else f"uid{mirror.user_id}",
+                           int(mirror.amount or 0), mirror.package_id or "-",
+                           mirror.order_no)
         except Exception:
             db.session.rollback()
             raise

@@ -59,6 +59,10 @@ SMS_SEND_IP_LIMIT = int(os.getenv("SMS_SEND_IP_LIMIT", "10"))
 SMS_SEND_IP_WINDOW_SECONDS = int(os.getenv("SMS_SEND_IP_WINDOW_SECONDS", "3600"))
 SMS_SEND_PHONE_WINDOW_SECONDS = int(os.getenv("SMS_SEND_PHONE_WINDOW_SECONDS", "60"))
 
+# 站长 Bark 推送(新用户注册/订单支付提醒);留空即停用
+BARK_SERVER_URL = os.getenv("BARK_SERVER_URL", "").strip()
+BARK_DEVICE_KEY = os.getenv("BARK_DEVICE_KEY", "").strip()
+
 PAYKIT_PATH = os.getenv("PAYKIT_PATH", "F:/paykit")
 PAYKIT_MODE = os.getenv("PAYKIT_MODE", "off" if IS_PRIVATE else "sandbox").strip().lower()
 

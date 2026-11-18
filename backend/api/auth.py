@@ -137,6 +137,8 @@ def register():
                  detail={"agreements": ["服务条款", "隐私政策"], "via": "register"},
                  actor=user, commit=False)
     db.session.commit()
+    from services.bark import user_registered
+    user_registered(user.phone, user.register_ip or "")
     return set_session_cookie(ok({"user": user.to_dict()}), user)
 
 
